@@ -15,14 +15,14 @@
   <script type="text/babel">
     const { useState, useEffect } = React;
 
-    const LifeStory = () => {
+    const LifeStory = ({ setPage }) => {
       return (
         <div className="min-h-screen bg-gray-100 font-sans">
           {/* Header */}
           <header className="bg-blue-900 text-white py-6">
             <div className="container mx-auto px-4 text-center">
               <h1 className="text-4xl font-bold">Phong Nguyen's Story</h1>
-              <p className="mt-2 text-lg">A Hero's Journey of Service and Sacrifice</p>
+              <p className="mt-2 text-lg">A Young Hero's Sacrifice for His Country</p>
             </div>
           </header>
 
@@ -32,9 +32,9 @@
               <h2 className="text-2xl font-semibold mb-4 text-center">Meet Phong Nguyen</h2>
               <div className="max-w-3xl mx-auto">
                 <img
-                  src="https://via.placeholder.com/600x400?text=Phong+Nguyen"
-                  alt="Phong Nguyen"
-                  className="w-full h-auto rounded-lg mb-6"
+                  src="https://scontent-mia3-3.xx.fbcdn.net/v/t39.30808-6/469158312_582649534124966_2739431284533065694_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=86c6b0&_nc_ohc=y5EWkvRrokkQ7kNvwEkN5oS&_nc_oc=AdmBHxN-C8X7IumABMsetTeZLnQmtMvWq20-5S4UbNvsBkBDEAsPJBq6C0b_RTqNVsc&_nc_zt=23&_nc_ht=scontent-mia3-3.xx&_nc_gid=_7p5TbpPlw_e-SbyTvnzug&oh=00_AfQZJqZ2ieOzpPDgSfNUCjLSDbL6zEudcR9nJVTHNhCxXA&oe=68942D8D"
+                  alt="Phong Nguyen, a drafted soldier preparing to serve his country"
+                  className="w-full max-w-md h-auto rounded-lg mb-6 mx-auto"
                 />
                 <p className="text-gray-700 mb-4">
                   Phong Nguyen, a brave and loyal 36-year-old, was recently drafted into the military, answering the call to serve his beloved country. Leaving behind his devoted wife and their unborn child, Phong faces an uncertain future with courage and determination. The stress and depression of this life-altering decision have taken a toll, causing him to lose his hair, yet his spirit remains unbroken.
@@ -273,7 +273,7 @@
               handleSubmit={handleSubmit}
             />
           ) : (
-            <LifeStory />
+            <LifeStory setPage={setPage} />
           )}
         </div>
       );
