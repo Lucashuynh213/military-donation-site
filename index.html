@@ -8,53 +8,77 @@
   <script src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.development.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.development.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/babel-standalone@6.26.0/babel.min.js"></script>
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 </head>
 <body>
   <div id="root"></div>
   <script type="text/babel">
     const { useState, useEffect } = React;
 
-    const App = () => {
-      const [donors, setDonors] = useState([]);
-      const [formData, setFormData] = useState({
-        name: '',
-        amount: '',
-        message: ''
-      });
+    const LifeStory = () => {
+      return (
+        <div className="min-h-screen bg-gray-100 font-sans">
+          {/* Header */}
+          <header className="bg-blue-900 text-white py-6">
+            <div className="container mx-auto px-4 text-center">
+              <h1 className="text-4xl font-bold">Phong Nguyen's Story</h1>
+              <p className="mt-2 text-lg">A Hero's Journey of Service and Sacrifice</p>
+            </div>
+          </header>
 
-      // Load donors from localStorage on mount
-      useEffect(() => {
-        const storedDonors = JSON.parse(localStorage.getItem('donors') || '[]');
-        setDonors(storedDonors);
-      }, []);
+          {/* Life Story Content */}
+          <main className="container mx-auto px-4 py-8">
+            <section className="bg-white p-6 rounded-lg shadow-md mb-8">
+              <h2 className="text-2xl font-semibold mb-4 text-center">Meet Phong Nguyen</h2>
+              <div className="max-w-3xl mx-auto">
+                <img
+                  src="https://via.placeholder.com/600x400?text=Phong+Nguyen"
+                  alt="Phong Nguyen"
+                  className="w-full h-auto rounded-lg mb-6"
+                />
+                <p className="text-gray-700 mb-4">
+                  Phong Nguyen, a brave and loyal 36-year-old, was recently drafted into the military, answering the call to serve his beloved country. Leaving behind his devoted wife and their unborn child, Phong faces an uncertain future with courage and determination. The stress and depression of this life-altering decision have taken a toll, causing him to lose his hair, yet his spirit remains unbroken.
+                </p>
+                <p className="text-gray-700 mb-4">
+                  As a young man with a heart full of patriotism, Phong is willing to fight for the freedoms we cherish. But his young family needs our support to navigate this challenging time. Your donation will help provide financial stability, emotional support, and resources for his wife and unborn child while Phong serves our nation.
+                </p>
+                <p className="text-gray-700 mb-6">
+                  <strong>Why Donate?</strong> Your generosity can ease the burden on Phong’s family, ensuring they have the support they need during his service. Every dollar counts in helping this brave young hero and his loved ones thrive.
+                </p>
+                <div className="text-center">
+                  <a
+                    href="#donate"
+                    className="inline-block bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 transition text-lg font-semibold"
+                    onClick={() => setPage('donate')}
+                  >
+                    Donate Now
+                  </a>
+                </div>
+              </div>
+            </section>
+          </main>
 
-      // Handle form input changes
-      const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
-      };
+          {/* Footer */}
+          <footer className="bg-blue-900 text-white py-4">
+            <div className="container mx-auto px-4 text-center">
+              <p>&copy; 2025 Support Our Military Friend</p>
+              <p className="mt-2">
+                <a
+                  href="https://github.com/yourusername/donation-website"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline hover:text-blue-300"
+                >
+                  View Source on GitHub
+                </a>
+              </p>
+            </div>
+          </footer>
+        </div>
+      );
+    };
 
-      // Handle form submission
-      const handleSubmit = (e) => {
-        e.preventDefault();
-        if (formData.name && formData.amount) {
-          const newDonor = {
-            id: Date.now(),
-            name: formData.name,
-            amount: parseFloat(formData.amount),
-            message: formData.message,
-            date: new Date().toLocaleDateString()
-          };
-          const updatedDonors = [...donors, newDonor];
-          setDonors(updatedDonors);
-          localStorage.setItem('donors', JSON.stringify(updatedDonors));
-          setFormData({ name: '', amount: '', message: '' });
-          alert('Thank you for your donation!');
-        } else {
-          alert('Please fill in name and amount.');
-        }
-      };
-
+    const DonationPage = ({ donors, setDonors, formData, setFormData, handleInputChange, handleSubmit }) => {
       return (
         <div className="min-h-screen bg-gray-100 font-sans">
           {/* Header */}
@@ -155,6 +179,102 @@
               </p>
             </div>
           </footer>
+        </div>
+      );
+    };
+
+    const App = () => {
+      const [donors, setDonors] = useState([]);
+      const [formData, setFormData] = useState({
+        name: '',
+        amount: '',
+        message: ''
+      });
+      const [page, setPage] = useState('donate');
+
+      // Load donors from localStorage on mount
+      useEffect(() => {
+        const storedDonors = JSON.parse(localStorage.getItem('donors') || '[]');
+        setDonors(storedDonors);
+      }, []);
+
+      // Handle form input changes
+      const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setFormData({ ...formData, [name]: value });
+      };
+
+      // Handle form submission with Razorpay
+      const handleSubmit = (e) => {
+        e.preventDefault();
+        if (!formData.name || !formData.amount) {
+          alert('Please fill in name and amount.');
+          return;
+        }
+        const options = {
+          key: 'YOUR_RAZORPAY_KEY', // Replace with your Razorpay Key ID
+          amount: parseFloat(formData.amount) * 100, // Convert to cents
+          currency: 'USD',
+          name: 'Support Our Military Friend',
+          description: 'Donation for Phong Nguyen',
+          handler: function (response) {
+            const newDonor = {
+              id: response.razorpay_payment_id,
+              name: formData.name,
+              amount: parseFloat(formData.amount),
+              message: formData.message,
+              date: new Date().toLocaleDateString(),
+            };
+            const updatedDonors = [...donors, newDonor];
+            setDonors(updatedDonors);
+            localStorage.setItem('donors', JSON.stringify(updatedDonors));
+            setFormData({ name: '', amount: '', message: '' });
+            alert('Payment successful! Thank you for your donation!');
+          },
+          prefill: {
+            name: formData.name,
+          },
+          theme: {
+            color: '#1E3A8A',
+          },
+        };
+        const rzp = new window.Razorpay(options);
+        rzp.open();
+      };
+
+      return (
+        <div>
+          {/* Navigation */}
+          <nav className="bg-blue-800 text-white py-3">
+            <div className="container mx-auto px-4 flex justify-center space-x-4">
+              <button
+                onClick={() => setPage('donate')}
+                className={`px-4 py-2 rounded ${page === 'donate' ? 'bg-blue-600' : 'hover:bg-blue-700'}`}
+              >
+                Donation Page
+              </button>
+              <button
+                onClick={() => setPage('story')}
+                className={`px-4 py-2 rounded ${page === 'story' ? 'bg-blue-600' : 'hover:bg-blue-700'}`}
+              >
+                Phong's Story
+              </button>
+            </div>
+          </nav>
+
+          {/* Page Content */}
+          {page === 'donate' ? (
+            <DonationPage
+              donors={donors}
+              setDonors={setDonors}
+              formData={formData}
+              setFormData={setFormData}
+              handleInputChange={handleInputChange}
+              handleSubmit={handleSubmit}
+            />
+          ) : (
+            <LifeStory />
+          )}
         </div>
       );
     };
